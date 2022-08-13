@@ -1,8 +1,12 @@
 module guzman.c195 {
     requires javafx.controls;
     requires javafx.fxml;
-            
-                            
-    opens guzman.c195 to javafx.fxml;
-    exports guzman.c195;
+    requires java.sql;
+
+
+    opens Main to javafx.graphics, javafx.fxml, javafx.base;
+    opens Model to javafx.graphics, javafx.fxml, javafx.base;
+    opens helper to javafx.graphics, javafx.fxml, javafx.base;
+
+    exports Main;
 }

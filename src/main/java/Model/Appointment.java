@@ -1,2 +1,4 @@
-package Model;public class Appointment {
+package Model;
+
+public class Appointment {
 }
