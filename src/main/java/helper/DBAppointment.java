@@ -16,6 +16,7 @@ public class DBAppointment {
 
     public static void loadAllAppointments(){
         try {
+            appointments.removeAll();
             String sql = "SELECT * from appointments";
             PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
 

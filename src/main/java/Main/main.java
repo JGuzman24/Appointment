@@ -1,8 +1,9 @@
 package Main;
 
 import Model.Country;
+import Model.Division;
 import Model.User;
-import helper.DBCountry;
+import helper.DBDivision;
 import helper.DBUser;
 import helper.JDBC;
 import javafx.application.Application;
@@ -34,11 +35,11 @@ public class main extends Application {
         JDBC.openConnection();
         System.out.println(Locale.getDefault());
 
-        ObservableList<Country> countryList = DBCountry.getAllCountries();
+        ObservableList<Division> divisionsList = DBDivision.loadAllDivisions();
         ObservableList<User> userList = DBUser.getAllUsers();
 
-        for (Country C : countryList){
-            System.out.println("Country ID: " + C.getId() + "  Name: " + C.getName());
+        for (Division D: divisionsList){
+            System.out.println("Division ID: " + D.getId() + "  Name: " + D.getName() + "  Country: " + D.getCountry());
         }
         for (User U : userList){
             System.out.println("User ID: " + U.getId() + "  Username: " + U.getName() + "  Password: " + U.getPassword());

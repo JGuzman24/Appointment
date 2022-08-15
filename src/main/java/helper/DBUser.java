@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class DBUser {
+    private static String currentUser = "";
 
 
     public static ObservableList<User> getAllUsers(){
@@ -59,6 +60,7 @@ public class DBUser {
                         passFound.next();
                         if (passFound.getString("Password").equals(password)){
                             System.out.println("Password verified");
+                            currentUser = username;
                             return true;
                         }
 
@@ -85,5 +87,8 @@ public class DBUser {
         alert.setContentText(resource.getString("Erroruser"));
         alert.showAndWait();
         return false;
+    }
+    public static String getCurrentUser(){
+        return currentUser;
     }
 }

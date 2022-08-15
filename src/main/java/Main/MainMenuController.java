@@ -5,10 +5,15 @@ import Model.Customer;
 import helper.DBAppointment;
 import helper.DBCustomer;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Optional;
@@ -40,7 +45,15 @@ public class MainMenuController implements Initializable {
 
     private static Appointment modifyAppointment;
 
-    public void addCustomer(ActionEvent actionEvent) {
+    public void addCustomer(ActionEvent actionEvent) throws IOException {
+        CustomerController.loadModCustomer(null);
+
+        FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("Customer.fxml"));
+        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+        Scene scene = new Scene(fxmlLoader.load(), 320, 400);
+        stage.setTitle("Customer");
+        stage.setScene(scene);
+        stage.show();
     }
 
     public void delCustomer(ActionEvent actionEvent) {
@@ -62,7 +75,25 @@ public class MainMenuController implements Initializable {
         }
     }
 
-    public void modCustomer(ActionEvent actionEvent) {
+    public void modCustomer(ActionEvent actionEvent) throws IOException {
+        modifyCustomer = customerTable.getSelectionModel().getSelectedItem();
+
+        if(modifyCustomer == null){
+            Alert noSelection = new Alert(Alert.AlertType.ERROR);
+            noSelection.setTitle("Delete Customer");
+            noSelection.setContentText("No Customer is Selected");
+            noSelection.showAndWait();
+        }else {
+            CustomerController.loadModCustomer(modifyCustomer);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("Customer.fxml"));
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Scene scene = new Scene(fxmlLoader.load(), 320, 400);
+            stage.setTitle("Customer");
+            stage.setScene(scene);
+            stage.show();
+        }
+
     }
 
     public void addAppointment(ActionEvent actionEvent) {
@@ -94,6 +125,7 @@ public class MainMenuController implements Initializable {
         DBCustomer.loadAllCustomers();
         DBAppointment.loadAllAppointments();
 
+        customerTable.getItems().clear();
         customerTable.setItems(DBCustomer.getCustomers());
         customerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         customerName.setCellValueFactory(new PropertyValueFactory<>("customerName"));
@@ -103,6 +135,7 @@ public class MainMenuController implements Initializable {
         levelDivision.setCellValueFactory(new PropertyValueFactory<>("division"));
         customerCountry.setCellValueFactory(new PropertyValueFactory<>("country"));
 
+        appointmentTable.getItems().clear();
         appointmentTable.setItems(DBAppointment.getAppointments());
         appointmentID.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
         appCustomerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));

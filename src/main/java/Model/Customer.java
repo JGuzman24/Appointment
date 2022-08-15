@@ -1,5 +1,6 @@
 package Model;
 
+import helper.DBDivision;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
 
@@ -17,13 +18,13 @@ public class Customer {
     private int divisionID;
 
 
-    public Customer(int customerID, String customerName, String address, String division, String postalCode, String country, String phoneNumber, int divisionID) {
+    public Customer(int customerID, String customerName, String address, String postalCode, String phoneNumber, int divisionID) {
         this.customerID = customerID;
         this.customerName = customerName;
         this.address = address;
-        this.division = division;
+        this.division = DBDivision.getDivision(divisionID).getName();
         this.postalCode = postalCode;
-        this.country = country;
+        this.country = DBDivision.getDivision(divisionID).getCountry();
         this.phoneNumber = phoneNumber;
         this.divisionID = divisionID;
     }

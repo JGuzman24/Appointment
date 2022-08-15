@@ -1,5 +1,7 @@
 package Main;
 
+import helper.DBAppointment;
+import helper.DBCustomer;
 import helper.DBUser;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -84,6 +86,7 @@ public class LoginController implements Initializable {
 
 
         if(verified) {
+
             FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("MainMenu.fxml"));
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             Scene scene = new Scene(fxmlLoader.load(), 1200, 700);

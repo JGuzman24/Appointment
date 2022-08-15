@@ -12,4 +12,9 @@ public class Country {
 
     public int getId() {return id;}
     public String getName() {return name;}
+
+    @Override
+    public String toString(){
+        return (this.name);
+    }
 }
