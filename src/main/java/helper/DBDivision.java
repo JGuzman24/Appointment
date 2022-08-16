@@ -53,6 +53,15 @@ public class DBDivision {
         return null;
     }
 
+    public static Country getCountry(int divisionID){
+        for(Country C: countries){
+            if(C.getId()== getDivision(divisionID).getCountryID()){
+                return C;
+            }
+        }
+        return null;
+    }
+
     public static ObservableList<Country> countries = FXCollections.observableArrayList();
 
     public static ObservableList<Country> loadAllCountries(){
@@ -83,6 +92,17 @@ public class DBDivision {
         ObservableList<Division> narrowedDivisions = FXCollections.observableArrayList();
         for(Division D : fullDivisions){
             if(D.getCountryID() == countryID){
+                narrowedDivisions.add(D);
+            }
+        }
+        return narrowedDivisions;
+    }
+
+    public static ObservableList<Division> getComboDivision(int divisionID){
+        ObservableList<Division> fullDivisions = loadAllDivisions();
+        ObservableList<Division> narrowedDivisions = FXCollections.observableArrayList();
+        for(Division D : fullDivisions){
+            if(D.getId() == divisionID){
                 narrowedDivisions.add(D);
             }
         }

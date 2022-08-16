@@ -63,5 +63,10 @@
       </Button>
       <ComboBox fx:id="country" layoutX="125.0" layoutY="273.0" onAction="#countrySelected" prefWidth="150.0" />
       <ComboBox fx:id="division" layoutX="125.0" layoutY="306.0" prefWidth="150.0" />
+      <Button fx:id="clear" layoutX="14.0" layoutY="350.0" mnemonicParsing="false" onAction="#clear" prefHeight="35.0" prefWidth="69.0" text="Clear">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

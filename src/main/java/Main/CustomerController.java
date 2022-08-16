@@ -12,10 +12,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
@@ -39,7 +38,12 @@ public class CustomerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        clearCustomerFields();
+
+        System.out.println("Next available ID: " + DBCustomer.getNextCustomerID());
         customerID.setText(Integer.toString(DBCustomer.getNextCustomerID()));
+        System.out.println("customer ID set to: " + customerID.getText());
+
 
         country.setItems(DBDivision.loadAllCountries());
         country.setPromptText("Country");
@@ -52,13 +56,15 @@ public class CustomerController implements Initializable {
             address.setText(modCustomer.getAddress());
             postalCode.setText(modCustomer.getPostalCode());
             phoneNumber.setText(modCustomer.getPhoneNumber());
-
+            division.getSelectionModel().select(DBDivision.getDivision(modCustomer.getDivisionID()));
+            country.getSelectionModel().select(DBDivision.getCountry(modCustomer.getDivisionID()));
 
         }
     }
 
     public void saveCustomer(ActionEvent actionEvent) throws IOException{
-        try{
+        try {
+            System.out.println("On Save: customer ID set to: " + customerID.getText());
             int saveID = Integer.parseInt(customerID.getText());
             String saveName = name.getText();
             String saveAddress = address.getText();
@@ -66,18 +72,21 @@ public class CustomerController implements Initializable {
             String savePhoneNumber = phoneNumber.getText();
             int saveDivisionID = division.getSelectionModel().getSelectedItem().getId();
 
-            if(saveName == "" || saveAddress == "" || savePostalCode == "" || savePhoneNumber == "") {
+            if (saveName == "" || saveAddress == "" || savePostalCode == "" || savePhoneNumber == "") {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Empty Parameters");
                 alert.setContentText("Please make sure all fields are filled");
                 alert.showAndWait();
-            }
-            else{
+            } else {
+
                 if (modCustomer == null) {
-                    Customer newCustomer = new Customer(saveID, saveName, saveAddress, savePostalCode, savePhoneNumber,  saveDivisionID);
+                    System.out.println("New customer: customer ID set to: " + customerID.getText());
+                    Customer newCustomer = new Customer(saveID, saveName, saveAddress, savePostalCode, savePhoneNumber, saveDivisionID);
                     DBCustomer.addCustomer(newCustomer);
+                } else {
+                    System.out.println("Modifying customer: customer ID set to: " + customerID.getText());
+                    DBCustomer.modCustomer(saveID, saveName, saveAddress, savePostalCode, savePhoneNumber, saveDivisionID);
                 }
-                else {DBCustomer.modCustomer(saveID, saveName, saveAddress, savePostalCode, savePhoneNumber, saveDivisionID);}
 
 
                 FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("MainMenu.fxml"));
@@ -88,8 +97,8 @@ public class CustomerController implements Initializable {
                 stage.show();
             }
 
-        }
-        catch (NumberFormatException e) {
+
+        }catch (NumberFormatException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Dialog");
             alert.setContentText("Please enter valid values in text field.");
@@ -116,7 +125,30 @@ public class CustomerController implements Initializable {
     }
 
     public void countrySelected(ActionEvent actionEvent) {
-        int countryID = country.getSelectionModel().getSelectedItem().getId();
-        division.setItems(DBDivision.narrowDivisions(countryID));
+        try{
+            int countryID = country.getSelectionModel().getSelectedItem().getId();
+            division.setItems(DBDivision.narrowDivisions(countryID));
+        } catch (NullPointerException e) {
+
+        }
+
+    }
+    public void clearCustomerFields(){
+        name.setText(null);
+        address.setText(null);
+        postalCode.setText(null);
+        phoneNumber.setText(null);
+        country.setItems(DBDivision.loadAllCountries());
+        country.setPromptText("Country");
+        division.setPromptText("State/Province");
+        division.setItems(DBDivision.loadAllDivisions());
+    }
+
+    public static void clearModCustomer(){
+        modCustomer = null;
+    }
+
+    public void clear(ActionEvent actionEvent) {
+        clearCustomerFields();
     }
 }

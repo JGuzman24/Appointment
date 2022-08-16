@@ -15,9 +15,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import static Main.CustomerController.clearModCustomer;
+import static Main.AppointmentController.clearModAppointment;
 
 public class MainMenuController implements Initializable {
     public TableView<Customer> customerTable;
@@ -46,7 +50,7 @@ public class MainMenuController implements Initializable {
     private static Appointment modifyAppointment;
 
     public void addCustomer(ActionEvent actionEvent) throws IOException {
-        CustomerController.loadModCustomer(null);
+        clearModCustomer();
 
         FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("Customer.fxml"));
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
@@ -56,7 +60,7 @@ public class MainMenuController implements Initializable {
         stage.show();
     }
 
-    public void delCustomer(ActionEvent actionEvent) {
+    public void delCustomer(ActionEvent actionEvent) throws SQLException {
         modifyCustomer = customerTable.getSelectionModel().getSelectedItem();
 
         if(modifyCustomer == null){
@@ -71,8 +75,10 @@ public class MainMenuController implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if(result.isPresent() && result.get() == ButtonType.OK){
                 DBCustomer.deleteCustomer(modifyCustomer);
+                refreshCustomerTable();
             }
         }
+
     }
 
     public void modCustomer(ActionEvent actionEvent) throws IOException {
@@ -96,10 +102,18 @@ public class MainMenuController implements Initializable {
 
     }
 
-    public void addAppointment(ActionEvent actionEvent) {
+    public void addAppointment(ActionEvent actionEvent) throws IOException {
+        clearModAppointment();
+
+        FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("Appointment.fxml"));
+        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+        Scene scene = new Scene(fxmlLoader.load(), 324, 533);
+        stage.setTitle("Appointment");
+        stage.setScene(scene);
+        stage.show();
     }
 
-    public void delAppointment(ActionEvent actionEvent) {
+    public void delAppointment(ActionEvent actionEvent) throws SQLException {
         modifyAppointment = appointmentTable.getSelectionModel().getSelectedItem();
 
         if(modifyAppointment == null){
@@ -118,14 +132,36 @@ public class MainMenuController implements Initializable {
         }
     }
 
-    public void modAppointment(ActionEvent actionEvent) {
+    public void modAppointment(ActionEvent actionEvent) throws IOException {
+        modifyAppointment = appointmentTable.getSelectionModel().getSelectedItem();
+
+        if(modifyAppointment == null){
+            Alert noSelection = new Alert(Alert.AlertType.ERROR);
+            noSelection.setTitle("Delete Appointment");
+            noSelection.setContentText("No Appointment is Selected");
+            noSelection.showAndWait();
+        }else {
+            AppointmentController.loadModAppointment(modifyAppointment);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("Appointment.fxml"));
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Scene scene = new Scene(fxmlLoader.load(), 324, 533);
+            stage.setTitle("Appointment");
+            stage.setScene(scene);
+            stage.show();
+        }
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        refreshCustomerTable();
+
+
+    }
+
+    public void refreshCustomerTable(){
         DBCustomer.loadAllCustomers();
         DBAppointment.loadAllAppointments();
 
-        customerTable.getItems().clear();
         customerTable.setItems(DBCustomer.getCustomers());
         customerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         customerName.setCellValueFactory(new PropertyValueFactory<>("customerName"));
@@ -135,7 +171,6 @@ public class MainMenuController implements Initializable {
         levelDivision.setCellValueFactory(new PropertyValueFactory<>("division"));
         customerCountry.setCellValueFactory(new PropertyValueFactory<>("country"));
 
-        appointmentTable.getItems().clear();
         appointmentTable.setItems(DBAppointment.getAppointments());
         appointmentID.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
         appCustomerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));
@@ -147,7 +182,6 @@ public class MainMenuController implements Initializable {
         startTime.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         endTime.setCellValueFactory(new PropertyValueFactory<>("endTime"));
         userID.setCellValueFactory(new PropertyValueFactory<>("userID"));
-
 
     }
 

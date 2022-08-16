@@ -1,6 +1,7 @@
 package Model;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Appointment {
 
@@ -8,15 +9,15 @@ public class Appointment {
     private String title;
     private String description;
     private String location;
-    private int contact;
+    private Contact contact;
     private String type;
-    private Timestamp startTime;
-    private Timestamp endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private int customerID;
     private int userID;
 
 
-    public Appointment(int appointmentID, String title, String description, String location, int contact, String type, Timestamp startTime, Timestamp endTime, int customerID, int userID) {
+    public Appointment(int appointmentID, String title, String description, String location, String type, LocalDateTime startTime, LocalDateTime endTime, int customerID, int userID, Contact contact) {
         this.appointmentID = appointmentID;
         this.title = title;
         this.description = description;
@@ -46,7 +47,7 @@ public class Appointment {
         return location;
     }
 
-    public int getContact() {
+    public Contact getContact() {
         return contact;
     }
 
@@ -55,11 +56,11 @@ public class Appointment {
     }
 
     public Timestamp getStartTime() {
-        return startTime;
+        return Timestamp.valueOf(startTime);
     }
 
     public Timestamp getEndTime() {
-        return endTime;
+        return Timestamp.valueOf(endTime);
     }
 
     public int getCustomerID() {
@@ -86,7 +87,7 @@ public class Appointment {
         this.location = location;
     }
 
-    public void setContact(int contact) {
+    public void setContact(Contact contact) {
         this.contact = contact;
     }
 
@@ -94,11 +95,11 @@ public class Appointment {
         this.type = type;
     }
 
-    public void setStartTime(Timestamp startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public void setEndTime(Timestamp endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 
