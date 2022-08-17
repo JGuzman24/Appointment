@@ -30,7 +30,7 @@ public class LoginController implements Initializable {
     public TextField loginUser;
     public TextField loginPassword;
 
-    private static final SimpleDateFormat time = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+    public static final SimpleDateFormat time = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
     public Button login;
     public Button reset;
     public Label Title;

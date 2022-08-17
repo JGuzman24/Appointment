@@ -2,6 +2,7 @@ package Model;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class Appointment {
 
@@ -61,6 +62,14 @@ public class Appointment {
 
     public Timestamp getEndTime() {
         return Timestamp.valueOf(endTime);
+    }
+
+    public LocalDateTime getStart() {
+        return startTime;
+    }
+
+    public LocalDateTime getEnd() {
+        return endTime;
     }
 
     public int getCustomerID() {

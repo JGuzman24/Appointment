@@ -106,6 +106,12 @@ public class CustomerController implements Initializable {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        catch (NullPointerException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Empty Field");
+            alert.setContentText("One or more fields is empty.");
+            alert.showAndWait();
+        }
 
     }
 

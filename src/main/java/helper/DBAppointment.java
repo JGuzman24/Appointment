@@ -51,6 +51,68 @@ public class DBAppointment {
             e.printStackTrace();
         }
     }
+
+    public static void loadWeekAppointments(){
+        try {
+            appointments.removeAll(appointments);
+            String sql = "select * from appointments where week(Start)=week(now());";
+            PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                int appointmentID = rs.getInt("Appointment_ID");
+                String title = rs.getString("Title");
+                String description = rs.getString("Description");
+                String location = rs.getString("Location");
+                int contactID = rs.getInt("Contact_ID");
+                String type = rs.getString("Type");
+                LocalDateTime startTime = rs.getTimestamp("Start").toLocalDateTime();
+                LocalDateTime endTime = rs.getTimestamp("End").toLocalDateTime();
+                int customerID = rs.getInt("Customer_ID");
+                int userID = rs.getInt("User_ID");
+
+                Contact contact = getContact(contactID);
+
+                Appointment appointment = new Appointment(appointmentID, title, description, location, type, startTime, endTime, customerID, userID, contact);
+                appointments.add(appointment);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadMonthAppointments(){
+        try {
+            appointments.removeAll(appointments);
+            String sql = "select * from appointments where month(Start)=month(now());";
+            PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                int appointmentID = rs.getInt("Appointment_ID");
+                String title = rs.getString("Title");
+                String description = rs.getString("Description");
+                String location = rs.getString("Location");
+                int contactID = rs.getInt("Contact_ID");
+                String type = rs.getString("Type");
+                LocalDateTime startTime = rs.getTimestamp("Start").toLocalDateTime();
+                LocalDateTime endTime = rs.getTimestamp("End").toLocalDateTime();
+                int customerID = rs.getInt("Customer_ID");
+                int userID = rs.getInt("User_ID");
+
+                Contact contact = getContact(contactID);
+
+                Appointment appointment = new Appointment(appointmentID, title, description, location, type, startTime, endTime, customerID, userID, contact);
+                appointments.add(appointment);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public static void loadAllContacts(){
         try{
             contacts.removeAll(contacts);
