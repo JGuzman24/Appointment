@@ -18,6 +18,7 @@ public class Appointment {
     private int userID;
 
 
+
     public Appointment(int appointmentID, String title, String description, String location, String type, LocalDateTime startTime, LocalDateTime endTime, int customerID, int userID, Contact contact) {
         this.appointmentID = appointmentID;
         this.title = title;

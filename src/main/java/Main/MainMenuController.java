@@ -164,7 +164,6 @@ public class MainMenuController implements Initializable {
         checkAppointments();
 
 
-
     }
 
     public void refreshCustomerTable(){

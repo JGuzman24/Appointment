@@ -1,5 +1,7 @@
 package helper;
 
+import Model.Contact;
+import Model.Country;
 import Model.Customer;
 import Model.User;
 import javafx.collections.FXCollections;
@@ -12,6 +14,7 @@ import java.sql.SQLException;
 public class DBCustomer {
 
     private static ObservableList<Customer> customers = FXCollections.observableArrayList();
+    private static ObservableList<Country> countries = FXCollections.observableArrayList();
 
     private static int nextCustomerID = 1;
 
@@ -43,6 +46,31 @@ public class DBCustomer {
         }
     }
 
+    public static void loadAllCountries(){
+        try{
+            countries.removeAll(countries);
+            String sql = "SELECT * from countries";
+            PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int countryId = rs.getInt("Country_ID");
+                String name = rs.getString("Country");
+
+                Country country = new Country(countryId, name);
+                countries.add(country);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public static ObservableList<Country> getCountries(){
+        loadAllCountries();
+        return countries;
+    }
     public static ObservableList<Customer> getCustomers(){
         return customers;
     }

@@ -1,5 +1,11 @@
 package Main;
 
+import Model.Appointment;
+import helper.DBAppointment;
+import helper.DBCustomer;
+import javafx.beans.Observable;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -11,10 +17,10 @@ import java.util.ResourceBundle;
 
 public class ReportController implements Initializable {
     public ComboBox selectMonth;
-    public TableView monthReportTable;
+    public TableView<Appointment> monthReportTable;
     public TableColumn monthType;
     public TableColumn monthTotal;
-    public TableView contactReportTable;
+    public TableView<Appointment> contactReportTable;
     public TableColumn contactAppID;
     public TableColumn contactTitle;
     public TableColumn contactType;
@@ -23,37 +29,45 @@ public class ReportController implements Initializable {
     public TableColumn contactEnd;
     public TableColumn contactCustomerID;
     public ComboBox selectContact;
-    public TableView countryReportTable;
-    public TableColumn monthType1;
-    public TableColumn monthTotal1;
+    public TableView<Appointment> countryReportTable;
+    public TableColumn country;
+    public TableColumn countryTotal;
     public ComboBox selectCountry;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        selectContact.setItems(DBAppointment.getContacts());
+        selectCountry.setItems(DBCustomer.getCountries());
 
 
 
+    }
+    public void refreshTable(ObservableList<Appointment> appointments , TableView<Appointment> appTable){
 
     }
 
     public void monthReport(ActionEvent actionEvent) {
-        setVis(selectMonth);
+        setBoxVis(selectMonth);
+        setTableVis(monthReportTable);
+
     }
 
     public void contactReport(ActionEvent actionEvent) {
-        setVis(selectContact);
+        setBoxVis(selectContact);
+        setTableVis(contactReportTable);
 
     }
 
     public void countryReport(ActionEvent actionEvent) {
-        setVis(selectCountry);
+        setBoxVis(selectCountry);
+        setTableVis(countryReportTable);
     }
 
     public interface box {
         void setVisible(ComboBox box);
     }
 
-    public void setVis(ComboBox box){
+    public void setBoxVis(ComboBox box){
         box invis = (x) -> {
             selectContact.setVisible(false);
             selectCountry.setVisible(false);
@@ -61,5 +75,19 @@ public class ReportController implements Initializable {
             x.setVisible(true);
         };
         invis.setVisible(box);
+    }
+
+    public interface table {
+        void setVisible(TableView table);
+    }
+
+    public void setTableVis(TableView table){
+        table invis = (x) -> {
+            contactReportTable.setVisible(false);
+            countryReportTable.setVisible(false);
+            monthReportTable.setVisible(false);
+            x.setVisible(true);
+        };
+        invis.setVisible(table);
     }
 }
