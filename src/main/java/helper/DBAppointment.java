@@ -2,7 +2,7 @@ package helper;
 
 import Model.Appointment;
 import Model.Contact;
-import Model.Customer;
+import Model.Country;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -17,6 +17,12 @@ public class DBAppointment {
     private static ObservableList<Appointment> appointments = FXCollections.observableArrayList();
 
     private static ObservableList<Contact> contacts = FXCollections.observableArrayList();
+
+    private static ObservableList months = FXCollections.observableArrayList();
+    private static ObservableList<Country> monthReport = FXCollections.observableArrayList();
+    private static ObservableList<Appointment> contactReport = FXCollections.observableArrayList();
+    private static ObservableList<Country> countryReport = FXCollections.observableArrayList();
+
 
 
     private static int nextAppointmentID = 1;
@@ -52,6 +58,9 @@ public class DBAppointment {
         }
     }
 
+
+
+
     public static void loadWeekAppointments(){
         try {
             appointments.removeAll(appointments);
@@ -86,9 +95,8 @@ public class DBAppointment {
     public static void loadMonthAppointments(){
         try {
             appointments.removeAll(appointments);
-            String sql = "select * from appointments where month(Start)=month(now());";
+            String sql = "SELECT Type, COUNT(*)  as Amount FROM appointments where MONTHNAME(start) = ? GROUP BY  type";
             PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
-
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()){
@@ -107,6 +115,95 @@ public class DBAppointment {
 
                 Appointment appointment = new Appointment(appointmentID, title, description, location, type, startTime, endTime, customerID, userID, contact);
                 appointments.add(appointment);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadContactReport(Contact contact){
+        try {
+            contactReport.removeAll(contactReport);
+            String sql = "select * from appointments where contact_id = ? order by Start";
+            PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
+            ps.setInt(1, contact.getContactID());
+            System.out.println(ps);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                int appointmentID = rs.getInt("Appointment_ID");
+                String title = rs.getString("Title");
+                String description = rs.getString("Description");
+                String location = rs.getString("Location");
+                int contactID = rs.getInt("Contact_ID");
+                String type = rs.getString("Type");
+                LocalDateTime startTime = rs.getTimestamp("Start").toLocalDateTime();
+                LocalDateTime endTime = rs.getTimestamp("End").toLocalDateTime();
+                int customerID = rs.getInt("Customer_ID");
+                int userID = rs.getInt("User_ID");
+
+                Appointment appointment = new Appointment(appointmentID, title, description, location, type, startTime, endTime, customerID, userID, contact);
+                contactReport.add(appointment);
+            }
+            for (Appointment a: contactReport){
+                System.out.println("Appointment: " + a.getAppointmentID() + " -- For: " + a.getDescription() + " -- Assigned with " + a.getContact().getName() + "-" + a.getContact().getContactID());
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void loadMonthReport(String month){
+        try {
+            monthReport.removeAll(monthReport);
+            String sql = "SELECT Type, COUNT(*)  as Total FROM appointments where MONTHNAME(start) = ? GROUP BY  type";
+            PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
+            ps.setString(1, month);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                String type = rs.getString("Type");
+                int total = rs.getInt("Total");
+
+                Country report = new Country(total, type);
+
+                monthReport.add(report);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadCountryReport(int countryID){
+        try {
+            countryReport.removeAll(countryReport);
+            String sql = "select a.Type, Count(*) as Total\n" +
+                    "from appointments as a\n" +
+                    "inner join customers as s\n" +
+                    "on a.Customer_ID = s.Customer_ID\n" +
+                    "inner join first_level_divisions as d\n" +
+                    "on s.Division_ID = d.Division_ID\n" +
+                    "inner join countries c\n" +
+                    "on d.Country_ID = c.Country_ID\n" +
+                    "where d.Country_ID = ?\n" +
+                    "group by type";
+            PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
+            ps.setInt(1, countryID);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                String type = rs.getString("Type");
+                int total = rs.getInt("Total");
+
+                Country report = new Country(total, type);
+
+                System.out.println("Country ID: " + countryID + "   has " + total + " appointments of type: " + type);
+
+                countryReport.add(report);
             }
 
         } catch (SQLException e) {
@@ -148,6 +245,32 @@ public class DBAppointment {
 
     public static ObservableList<Appointment> getAppointments(){
         return appointments;
+    }
+    public static ObservableList<Country> getMonthReport(){
+        return monthReport;
+    }
+    public static ObservableList<Country> getCountryReport(){
+        return countryReport;
+    }
+    public static ObservableList<Appointment> getContactReport(){
+        return contactReport;
+    }
+
+    public static ObservableList getMonths() {
+        months.add("January");
+        months.add("February");
+        months.add("March");
+        months.add("April");
+        months.add("May");
+        months.add("June");
+        months.add("July");
+        months.add("August");
+        months.add("September");
+        months.add("October");
+        months.add("November");
+        months.add("December");
+
+        return months;
     }
 
     public static void deleteAppointment(Appointment appointment) throws SQLException {
