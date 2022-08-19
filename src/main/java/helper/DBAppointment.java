@@ -104,7 +104,7 @@ public class DBAppointment {
     public static void loadMonthAppointments(){
         try {
             appointments.removeAll(appointments);
-            String sql = "SELECT Type, COUNT(*)  as Amount FROM appointments where MONTHNAME(start) = ? GROUP BY  type";
+            String sql = "select * from appointments where month(Start) = month(now());";
             PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
 

@@ -35,6 +35,8 @@ interface error {
 
 /** Handles all functions in the Appointment frame
  * single class that handles both modifications and additional appointments
+ *
+ * - Lambda used for error screens
  */
 public class AppointmentController implements Initializable {
     public TextField appointmentIDField;
@@ -73,7 +75,7 @@ public class AppointmentController implements Initializable {
     }
 
     /** Lambda for error
-     * simplifies the code and makes the many logical error checks easy to apply
+     * simplifies the code and makes the many logical error checks easy to call
      */
     error alertError = (title, content) -> {
         Alert alert = new Alert(Alert.AlertType.ERROR);

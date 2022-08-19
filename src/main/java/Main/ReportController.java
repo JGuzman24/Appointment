@@ -21,14 +21,23 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/** Interface for combobox lambda
+ *
+ */
 interface box {
     void setVisible(ComboBox box);
 }
 
+/** Interface for tableview lambda
+ *
+ */
 interface table {
     void setVisible(TableView table);
 }
 
+/** Handles all functions in the Reports screen
+ * contains lambdas for visibility settings on ComboBox and TableView objects
+ */
 public class ReportController implements Initializable {
     public ComboBox<String> selectMonth;
     public TableView<Country> monthReportTable;
@@ -48,6 +57,10 @@ public class ReportController implements Initializable {
     public TableColumn countryTotal;
     public ComboBox<Country> selectCountry;
 
+    /** Lambda to set ComboBox visibility
+     * makes one box visible and the other two invisible
+     * helps code in main code much easier to call and read
+     */
     box vis = (x) -> {
         selectContact.setVisible(false);
         selectCountry.setVisible(false);
@@ -55,6 +68,10 @@ public class ReportController implements Initializable {
         x.setVisible(true);
     };
 
+    /** Lambda to set TableView visibility
+     * makes one table visible and the other two invisible
+     * helps code in main code much easier to call and read
+     */
     table invis = (x) -> {
         contactReportTable.setVisible(false);
         countryReportTable.setVisible(false);
@@ -63,7 +80,11 @@ public class ReportController implements Initializable {
     };
 
 
-
+    /** Initializer for the Reports screen
+     * sets list for all combo boxes
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         selectMonth.setItems(DBAppointment.getMonths());
@@ -72,23 +93,35 @@ public class ReportController implements Initializable {
 
     }
 
+    /** Uses lambdas to set Month box and table visible
+     * @param actionEvent month report button
+     */
     public void monthReport(ActionEvent actionEvent) {
         vis.setVisible(selectMonth);
         invis.setVisible(monthReportTable);
 
     }
 
+    /** Uses lambdas to set contact box and table visible
+     * @param actionEvent contact report button
+     */
     public void contactReport(ActionEvent actionEvent) {
         vis.setVisible(selectContact);
         invis.setVisible(contactReportTable);
 
     }
 
+    /** Uses lambdas to set Country box and table visible
+     * @param actionEvent country report button
+     */
     public void countryReport(ActionEvent actionEvent) {
         vis.setVisible(selectCountry);
         invis.setVisible(countryReportTable);
     }
 
+    /** Loads month report table based on selected month from combo box
+     * @param actionEvent month combo box selection
+     */
     public void loadMonthReport(ActionEvent actionEvent) {
         String month = selectMonth.getSelectionModel().getSelectedItem();
         DBAppointment.loadMonthReport(month);
@@ -98,6 +131,9 @@ public class ReportController implements Initializable {
 
     }
 
+    /** Loads contact report table from selected contact from combo box
+     * @param actionEvent contact combo box selection
+     */
     public void loadContactReport(ActionEvent actionEvent) {
         Contact contact = selectContact.getSelectionModel().getSelectedItem();
         DBAppointment.loadContactReport(contact);
@@ -112,6 +148,9 @@ public class ReportController implements Initializable {
 
     }
 
+    /** Loads country report table from selected country in country combo box
+     * @param actionEvent country combo box selection
+     */
     public void loadCountryReport(ActionEvent actionEvent) {
         int countryID = selectCountry.getSelectionModel().getSelectedItem().getId();
         DBAppointment.loadCountryReport(countryID);
@@ -120,6 +159,10 @@ public class ReportController implements Initializable {
         countryTotal.setCellValueFactory(new PropertyValueFactory<>("id"));
     }
 
+    /** Returns to main menu screen
+     * @param actionEvent back to main menu button
+     * @throws IOException
+     */
     public void returnToMain(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("MainMenu.fxml"));
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();

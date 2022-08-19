@@ -111,7 +111,7 @@ public class LoginController implements Initializable {
     }
 
     /** Clears login frame
-     * @param actionEvent
+     * @param actionEvent reset button
      */
     public void reset(ActionEvent actionEvent) {
         loginUser.setText(null);

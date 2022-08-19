@@ -5,7 +5,8 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
 
 
-
+/** class for Customer Object
+ */
 public class Customer {
 
     private int customerID;
@@ -18,6 +19,14 @@ public class Customer {
     private int divisionID;
 
 
+    /** Customer constructor
+     * @param customerID
+     * @param customerName
+     * @param address
+     * @param postalCode
+     * @param phoneNumber
+     * @param divisionID
+     */
     public Customer(int customerID, String customerName, String address, String postalCode, String phoneNumber, int divisionID) {
         this.customerID = customerID;
         this.customerName = customerName;
@@ -30,83 +39,68 @@ public class Customer {
     }
 
 
+    /** customerID getter
+     * @return customerID as int
+     */
     public int getCustomerID() {
         return customerID;
     }
 
-
-    public void setCustomerID(int customerID) {
-        this.customerID = customerID;
-    }
-
-
+    /** customerName getter
+     * @return customerName as String
+     */
     public String getCustomerName() {
         return customerName;
     }
 
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-
-
+    /** address getter
+     * @return address as String
+     */
     public String getAddress() {
         return address;
     }
 
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-
-    public String getDivision() {
-        return division;
-    }
-
-
-    public void setDivision(String division) {
-        this.division = division;
-    }
-
-
+    /** postalCode getter
+     * @return postalCode as String
+     */
     public String getPostalCode() {
         return postalCode;
     }
 
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-
-
+    /** country getter
+     * @return country as String
+     */
     public String getCountry() {
         return country;
     }
 
 
+    /** country setter
+     * @param country
+     */
     public void setCountry(String country) {
         this.country = country;
     }
 
-
+    /** phoneNumber getter
+     * @return phoneNumber as String
+     */
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    /** division getter
+     * @return division as String
+     */
+    public String getDivision() {
+        return division;
     }
 
-
+    /** divisionID getter
+     * @return divisionID as int
+     */
     public int getDivisionID() {
         return divisionID;
-    }
-
-
-    public void setDivisionID(int divisionID) {
-        this.divisionID = divisionID;
     }
 
 }

@@ -2,6 +2,7 @@ package Main;
 
 import Model.Appointment;
 import Model.Customer;
+import Model.Division;
 import helper.DBAppointment;
 import helper.DBCustomer;
 import helper.DBDivision;
@@ -27,6 +28,9 @@ import static Main.CustomerController.clearModCustomer;
 import static Main.AppointmentController.clearModAppointment;
 
 
+/** Handles all functions on the main menu
+ *
+ */
 public class MainMenuController implements Initializable {
     public TableView<Customer> customerTable;
     public TableColumn <Customer, Integer> customerID;
@@ -56,6 +60,13 @@ public class MainMenuController implements Initializable {
     public RadioButton weekRadioButton;
     public RadioButton monthRadioButton;
 
+    /** Takes user to customer screen
+     * clears modify customer in case one had been previously selected
+     * with no modify customer, text fields will be blank
+     *
+     * @param actionEvent Add Customer button
+     * @throws IOException
+     */
     public void addCustomer(ActionEvent actionEvent) throws IOException {
         clearModCustomer();
 
@@ -67,8 +78,14 @@ public class MainMenuController implements Initializable {
         stage.show();
     }
 
+    /** Deletes selected customer from database
+     * has a confirmation check
+     * @param actionEvent Delete Customer Button
+     * @throws SQLException
+     */
     public void delCustomer(ActionEvent actionEvent) throws SQLException {
         modifyCustomer = customerTable.getSelectionModel().getSelectedItem();
+        boolean match = false;
 
         if(modifyCustomer == null){
             Alert noSelection = new Alert(Alert.AlertType.ERROR);
@@ -81,13 +98,35 @@ public class MainMenuController implements Initializable {
             alert.setTitle("Delete Customer");
             Optional<ButtonType> result = alert.showAndWait();
             if(result.isPresent() && result.get() == ButtonType.OK){
-                DBCustomer.deleteCustomer(modifyCustomer);
-                refreshCustomerTable();
+                DBAppointment.loadAllAppointments();
+                ObservableList<Appointment> checkAppointments = DBAppointment.getAppointments();
+
+                for(Appointment A : checkAppointments){
+                    if(A.getCustomerID() == modifyCustomer.getCustomerID()){
+                        match = true;
+                    }
+                }
+                if(match){
+                    Alert noSelection = new Alert(Alert.AlertType.ERROR);
+                    noSelection.setTitle("Customer has an Appointment");
+                    noSelection.setContentText("Customer has one or more appointments.\n" +
+                                                "Appointments need to be deleted first.");
+                    noSelection.showAndWait();
+                }else{
+                    DBCustomer.deleteCustomer(modifyCustomer);
+                    refreshTables();
+                }
             }
         }
 
     }
 
+    /** Takes user to customer screen
+     * selects modify customer to pull in info into text fields in customer screen
+     *
+     * @param actionEvent Modify Customer button
+     * @throws IOException
+     */
     public void modCustomer(ActionEvent actionEvent) throws IOException {
         modifyCustomer = customerTable.getSelectionModel().getSelectedItem();
 
@@ -109,6 +148,13 @@ public class MainMenuController implements Initializable {
 
     }
 
+    /** /** Takes user to Appointment screen
+     * clears modify appointment in case one had been previously selected
+     * with no modify appointment, text fields will be blank
+     *
+     * @param actionEvent add Appointment button
+     * @throws IOException
+     */
     public void addAppointment(ActionEvent actionEvent) throws IOException {
         clearModAppointment();
 
@@ -120,6 +166,11 @@ public class MainMenuController implements Initializable {
         stage.show();
     }
 
+    /** Deletes selected appointment from database
+     * needs a confirmation from user to delete
+     * @param actionEvent delete appointment button
+     * @throws SQLException
+     */
     public void delAppointment(ActionEvent actionEvent) throws SQLException {
         modifyAppointment = appointmentTable.getSelectionModel().getSelectedItem();
 
@@ -135,10 +186,17 @@ public class MainMenuController implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if(result.isPresent() && result.get() == ButtonType.OK){
                 DBAppointment.deleteAppointment(modifyAppointment);
+                refreshTables();
             }
         }
     }
 
+    /** Takes user to appointment screen
+     * selects modify appointment to pull in info into text fields in appointment screen
+     *
+     * @param actionEvent modify appointment button
+     * @throws IOException
+     */
     public void modAppointment(ActionEvent actionEvent) throws IOException {
         modifyAppointment = appointmentTable.getSelectionModel().getSelectedItem();
 
@@ -158,19 +216,37 @@ public class MainMenuController implements Initializable {
             stage.show();
         }
     }
+
+    /** Initializes main menu
+     * loads Appointment and Customer tables
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        System.out.println("Got to main menu");
         allRadioButton.setSelected(true);
-        refreshCustomerTable();
+        refreshTables();
         checkAppointments();
 
 
     }
 
-    public void refreshCustomerTable(){
+    /** Reloads all appointment and customer information from database
+     * loads all refreshed data into respective tables
+     *
+     */
+    public void refreshTables(){
+        System.out.println("loading divisions");
         DBDivision.loadAllDivisions();
+        System.out.println("Loading Customers");
         DBCustomer.loadAllCustomers();
+        System.out.println("Loading Appointments");
         DBAppointment.loadAllAppointments();
+
+        for(Division D: DBDivision.loadAllDivisions()){
+            System.out.println(D.getName() + " - " + D.getCountry());
+        }
 
 
         customerTable.setItems(DBCustomer.getCustomers());
@@ -196,6 +272,9 @@ public class MainMenuController implements Initializable {
 
     }
 
+    /** Checks to see if there is an appointment ongoing or within 15 minutes of current time.
+     *
+     */
     public void checkAppointments(){
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         LocalDateTime now = currentTime.toLocalDateTime();
@@ -233,6 +312,9 @@ public class MainMenuController implements Initializable {
     }
 
 
+    /** Loads appointment table with all appointments
+     * @param actionEvent All radio button
+     */
     public void selectAll(ActionEvent actionEvent) {
         DBAppointment.loadAllAppointments();
         appointmentTable.setItems(DBAppointment.getAppointments());
@@ -248,6 +330,9 @@ public class MainMenuController implements Initializable {
         userID.setCellValueFactory(new PropertyValueFactory<>("userID"));
     }
 
+    /** Loads appointment table with appointments from current week
+     * @param actionEvent Week radio button
+     */
     public void selectWeek(ActionEvent actionEvent) {
         DBAppointment.loadWeekAppointments();
         appointmentTable.setItems(DBAppointment.getAppointments());
@@ -263,6 +348,9 @@ public class MainMenuController implements Initializable {
         userID.setCellValueFactory(new PropertyValueFactory<>("userID"));
     }
 
+    /** Loads appointment table with appointments from current month
+     * @param actionEvent Month radio button
+     */
     public void selectMonth(ActionEvent actionEvent) {
         DBAppointment.loadMonthAppointments();
         appointmentTable.setItems(DBAppointment.getAppointments());
@@ -278,6 +366,10 @@ public class MainMenuController implements Initializable {
         userID.setCellValueFactory(new PropertyValueFactory<>("userID"));
     }
 
+    /** Takes user to Reports screen
+     * @param actionEvent Reports button
+     * @throws IOException
+     */
     public void reports(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("Reports.fxml"));
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
@@ -287,6 +379,9 @@ public class MainMenuController implements Initializable {
         stage.show();
     }
 
+    /** Exits program with confirmation
+     * @param actionEvent Close button
+     */
     public void exitProgram(ActionEvent actionEvent) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you would like to exit the program?");
         Optional<ButtonType> result = alert.showAndWait();

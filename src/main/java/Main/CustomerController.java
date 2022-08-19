@@ -69,7 +69,7 @@ public class CustomerController implements Initializable {
     }
 
     /** Saves a customer
-     * @param actionEvent
+     * @param actionEvent save button
      * @throws IOException
      */
     public void saveCustomer(ActionEvent actionEvent) throws IOException{
@@ -124,7 +124,7 @@ public class CustomerController implements Initializable {
     }
 
     /** Returns to main menu
-     * @param actionEvent
+     * @param actionEvent return button
      * @throws IOException
      */
     public void returnToMenu(ActionEvent actionEvent) throws IOException {
@@ -137,7 +137,7 @@ public class CustomerController implements Initializable {
     }
 
 
-    /** MModify Customer getter
+    /** Modify Customer getter
      * @param customer
      */
     public static void loadModCustomer(Customer customer){
@@ -168,7 +168,7 @@ public class CustomerController implements Initializable {
         division.setItems(DBDivision.loadAllDivisions());
     }
 
-    /** Makes the modifiable null
+    /** Makes the modifiable Customer null
      *
      */
     public static void clearModCustomer(){
@@ -176,4 +176,10 @@ public class CustomerController implements Initializable {
     }
 
 
+    /** Button to clear fields
+     * @param actionEvent clear button
+     */
+    public void clear(ActionEvent actionEvent) {
+        clearCustomerFields();
+    }
 }

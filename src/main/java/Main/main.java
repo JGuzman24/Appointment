@@ -16,7 +16,15 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/** Main
+ *
+ */
 public class main extends Application {
+    /** Starts the JavaFX login screen
+     * loads system locale and language
+     * @param stage
+     * @throws IOException
+     */
     @Override
     public void start(Stage stage) throws IOException {
         Locale currentLocale = Locale.getDefault();
@@ -31,6 +39,9 @@ public class main extends Application {
 
     }
 
+    /** Launches program and opens database connection
+     * @param args
+     */
     public static void main(String[] args) {
         JDBC.openConnection();
         System.out.println(Locale.getDefault());
