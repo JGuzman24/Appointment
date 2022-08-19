@@ -11,6 +11,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/** Class that handles Customer functions with the database
+ *
+ */
 public class DBCustomer {
 
     private static ObservableList<Customer> customers = FXCollections.observableArrayList();
@@ -18,6 +21,9 @@ public class DBCustomer {
 
     private static int nextCustomerID = 1;
 
+    /** Loads all customers from the database
+     *
+     */
     public static void loadAllCustomers(){
         try {
             customers.removeAll(customers);
@@ -33,8 +39,6 @@ public class DBCustomer {
                 String address = rs.getString("Address");
                 String postalCode = rs.getString("Postal_Code");
                 String phoneNumber = rs.getString("Phone");
-                String country = "United States";
-                String division = "Ohio";
                 int divisionID = rs.getInt("Division_ID");;
 
                 Customer customer = new Customer(customerID, customerName, address, postalCode, phoneNumber,  divisionID);
@@ -46,6 +50,10 @@ public class DBCustomer {
         }
     }
 
+    /** Loads all countries from the database
+     * There is no Country helper, so this was chosen
+     *
+     */
     public static void loadAllCountries(){
         try{
             countries.removeAll(countries);
@@ -67,14 +75,25 @@ public class DBCustomer {
 
     }
 
+    /** Countries getter
+     * @return country list
+     */
     public static ObservableList<Country> getCountries(){
         loadAllCountries();
         return countries;
     }
+
+    /** Customers getter
+     * @return customer list
+     */
     public static ObservableList<Customer> getCustomers(){
         return customers;
     }
 
+    /** Deletes a customer from the database
+     * @param customer
+     * @throws SQLException
+     */
     public static void deleteCustomer(Customer customer) throws SQLException {
         String sql = "Delete from customers where Customer_ID = ?";
         PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
@@ -84,6 +103,10 @@ public class DBCustomer {
 
     }
 
+    /** Adds new customer to the database
+     * @param customer
+     * @throws SQLException
+     */
     public static void addCustomer(Customer customer) throws SQLException {
         try{
             String sql = "INSERT INTO customers (Customer_ID, Customer_Name, Address, Postal_Code, Phone, Create_Date, Created_By,Last_Update, Last_Updated_By, Division_ID) VALUES (?, ?, ?, ?, ?, NOW(), ?, NOW(), ?, ?)";
@@ -103,15 +126,15 @@ public class DBCustomer {
         }
     }
 
-    public static Customer getCustomer(int id){
-        for(Customer c : customers){
-            if (c.getCustomerID() == id){
-                return c;
-            }
-        }
-        return null;
-    }
-
+    /** Modifies a customer in the database
+     * all parameters are overwritten
+     * @param customerID
+     * @param customerName
+     * @param address
+     * @param postalCode
+     * @param phoneNumber
+     * @param divisionID
+     */
     public static void modCustomer(int customerID, String customerName, String address, String postalCode, String phoneNumber,  int divisionID){
         try{
             String sql = "UPDATE customers SET Customer_Name=?, Address=?, Postal_Code=?, Phone=?, Last_Update = NOW(), Last_Updated_By=?, Division_ID=? WHERE Customer_ID =?";
@@ -124,22 +147,17 @@ public class DBCustomer {
             ps.setInt(6, divisionID);
             ps.setInt(7, customerID);
 
-
-            //customers.add(customer);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        /*getCustomer(customerID).setCustomerName(customerName);
-        getCustomer(customerID).setAddress(address);
-        getCustomer(customerID).setPostalCode(postalCode);
-        getCustomer(customerID).setPhoneNumber(phoneNumber);
-        getCustomer(customerID).setDivision(division);
-        getCustomer(customerID).setCountry(country);
-        getCustomer(customerID).setDivisionID(divisionID);*/
-
     }
 
+    /** Returns next available ID for customer
+     * Starts at 1, adds 1 subsequently
+     * can find a previously deleted customer
+     * @return
+     */
     public static int getNextCustomerID() {
 
         for(int i = 1; i <= getCustomers().size()+1; i++) {
@@ -151,6 +169,10 @@ public class DBCustomer {
         return nextCustomerID;
     }
 
+    /** Looks up a customer from a given ID
+     * @param customerID
+     * @return customer
+     */
     public static Customer lookupCustomer(int customerID){
         for(Customer p : customers){
             if(p.getCustomerID() == customerID){

@@ -25,6 +25,17 @@ import java.util.ResourceBundle;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+
+/** Interface for error lambda
+ *
+ */
+interface error {
+    void showError(String title, String content);
+}
+
+/** Handles all functions in the Appointment frame
+ * single class that handles both modifications and additional appointments
+ */
 public class AppointmentController implements Initializable {
     public TextField appointmentIDField;
     public TextField titleField;
@@ -61,6 +72,22 @@ public class AppointmentController implements Initializable {
         clearAppointmentFields();
     }
 
+    /** Lambda for error
+     * simplifies the code and makes the many logical error checks easy to apply
+     */
+    error alertError = (title, content) -> {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    };
+
+    /** Initializer for the Appointment frame
+     * loads and refreshes data
+     * makses sure to set all database times in user's timezone
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         DBAppointment.loadAllContacts();
@@ -78,10 +105,6 @@ public class AppointmentController implements Initializable {
         Instant estFinish = finish.toInstant();
         ZonedDateTime startLocal = estBegin.atZone(localZone);
         ZonedDateTime endLocal = estFinish.atZone(localZone);
-
-
-
-
 
         contactCombo.setItems(DBAppointment.getContacts());
 
@@ -101,10 +124,7 @@ public class AppointmentController implements Initializable {
             endStart = endStart.plusMinutes(15);
         }
 
-
-
         appointmentIDField.setText(Integer.toString(DBAppointment.getNextAppointmentID()));
-
 
 
         if (modAppointment != null){
@@ -125,9 +145,15 @@ public class AppointmentController implements Initializable {
         }
     }
 
+    /** Saves the appointment entered into the database
+     * Very important functionality
+     * Both adds a new appointment and modifies an appointment that already exists
+     * Uses many error checks to verify in the integrity of the data
+     * @param actionEvent button press
+     * @throws IOException
+     */
     public void saveAppointment(ActionEvent actionEvent) throws IOException {
         try {
-            System.out.println("On Save: appointment ID set to: " + appointmentIDField.getText());
 
             int appointmentID = Integer.parseInt(appointmentIDField.getText());
             String title = titleField.getText();
@@ -140,22 +166,15 @@ public class AppointmentController implements Initializable {
             LocalDateTime start = LocalDateTime.of(startDatePicker.getValue(), startTime.getSelectionModel().getSelectedItem());
             LocalDateTime end = LocalDateTime.of(endDatePicker.getValue(), endTime.getSelectionModel().getSelectedItem());
 
-            System.out.println("Format for start save: " + start);
-            System.out.println("Format for end save: " + end);
-
             if(end.isBefore(start)){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Time Error");
-                alert.setContentText("Start Time must be before End Time.");
-                alert.showAndWait();
+                alertError.showError("Time Error", "Start Time must be before End Time.");
+
             }else {
 
                 if(noConflict(start, end, appointmentID)){
                     if (title == "" || description == "" || location == "" || type == "") {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Empty Parameters");
-                        alert.setContentText("Please make sure all fields are filled");
-                        alert.showAndWait();
+                        alertError.showError("Empty Parameters", "Please make sure all fields are filled");
+
                     } else {
                         if (modAppointment == null) {
 
@@ -174,29 +193,18 @@ public class AppointmentController implements Initializable {
                         stage.show();
                     }
                 } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Appointment Conflict");
-                    alert.setContentText("Appointment conflicts with other Appointment: " + conflictID);
-                    alert.showAndWait();
+                    alertError.showError("Appointment Conflict", ("Appointment conflicts with other Appointment: " + conflictID));
                 }
             }
-
-
         }catch (NumberFormatException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error Dialog");
-            alert.setContentText("Please enter valid values in text field.");
-            alert.showAndWait();
+            alertError.showError("Error Dialog", "Please enter valid values in text field.");
+
         } catch (NullPointerException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Empty Field");
-            alert.setContentText("One or more fields is empty.");
-            alert.showAndWait();
+            alertError.showError("Empty Field", "One or more fields is empty.");
+
         } catch (RuntimeException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Invalid Customer or User");
-            alert.setContentText("Customer or User Does not exist.");
-            alert.showAndWait();;
+            alertError.showError("Invalid Customer or User", "Customer or User Does not exist.");
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -204,6 +212,10 @@ public class AppointmentController implements Initializable {
 
     }
 
+    /** Returns user to main screen
+     * @param actionEvent
+     * @throws IOException
+     */
     public void returnToMenu(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("MainMenu.fxml"));
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
@@ -213,6 +225,9 @@ public class AppointmentController implements Initializable {
         stage.show();
     }
 
+    /** Clears all user editable fields
+     * Id is not editable and doesn't clear
+     */
     private void clearAppointmentFields() {
         titleField.setText(null);
         descriptionField.setText(null);
@@ -226,16 +241,23 @@ public class AppointmentController implements Initializable {
 
 
     }
+
+    /** Clears the appointment set for modification
+     * Necessary to verify the modifiable appointment doesn't stay in the system
+     *
+     */
     public static void clearModAppointment(){
         modAppointment = null;
     }
 
-    public void startTimeCombo(ActionEvent actionEvent) {
-    }
-
-    public void endTimeCombo(ActionEvent actionEvent) {
-    }
-
+    /** Checks if there is a time conflict with any existing appointmets
+     * Check happens with any new or modified appointments.
+     * Conflict checker checks against all others, other than itself.
+     * @param start
+     * @param end
+     * @param appointmentID
+     * @return
+     */
     public Boolean noConflict(LocalDateTime start, LocalDateTime end, int appointmentID){
         ObservableList<Appointment> appointments = DBAppointment.getAppointments();
         for (Appointment A: appointments){

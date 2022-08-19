@@ -4,6 +4,7 @@ import Model.Appointment;
 import Model.Customer;
 import helper.DBAppointment;
 import helper.DBCustomer;
+import helper.DBDivision;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -24,7 +25,7 @@ import java.util.ResourceBundle;
 
 import static Main.CustomerController.clearModCustomer;
 import static Main.AppointmentController.clearModAppointment;
-import static Main.LoginController.time;
+
 
 public class MainMenuController implements Initializable {
     public TableView<Customer> customerTable;
@@ -167,6 +168,7 @@ public class MainMenuController implements Initializable {
     }
 
     public void refreshCustomerTable(){
+        DBDivision.loadAllDivisions();
         DBCustomer.loadAllCustomers();
         DBAppointment.loadAllAppointments();
 
@@ -279,9 +281,17 @@ public class MainMenuController implements Initializable {
     public void reports(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("Reports.fxml"));
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-        Scene scene = new Scene(fxmlLoader.load(), 815, 610);
+        Scene scene = new Scene(fxmlLoader.load(), 815, 650);
         stage.setTitle("Reports");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void exitProgram(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you would like to exit the program?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.isPresent() && result.get() == ButtonType.OK){
+            System.exit(0);
+        }
     }
 }

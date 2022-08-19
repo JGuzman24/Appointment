@@ -12,6 +12,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+/** This class handles the functions needed for appointments into/from the database
+ *
+ */
 public class DBAppointment {
 
     private static ObservableList<Appointment> appointments = FXCollections.observableArrayList();
@@ -23,10 +26,12 @@ public class DBAppointment {
     private static ObservableList<Appointment> contactReport = FXCollections.observableArrayList();
     private static ObservableList<Country> countryReport = FXCollections.observableArrayList();
 
-
-
     private static int nextAppointmentID = 1;
 
+
+    /** Loads all appointments from the database
+     *
+     */
     public static void loadAllAppointments(){
         try {
             appointments.removeAll(appointments);
@@ -59,8 +64,9 @@ public class DBAppointment {
     }
 
 
-
-
+    /** Loads appointments from the database that match the current week
+     *
+     */
     public static void loadWeekAppointments(){
         try {
             appointments.removeAll(appointments);
@@ -92,6 +98,9 @@ public class DBAppointment {
         }
     }
 
+    /** Loads appointments from the database that match the current month
+     *
+     */
     public static void loadMonthAppointments(){
         try {
             appointments.removeAll(appointments);
@@ -122,40 +131,46 @@ public class DBAppointment {
         }
     }
 
+    /** Loads appointments that match a particular contact
+     *
+     * @param contact
+     */
     public static void loadContactReport(Contact contact){
         try {
-            contactReport.removeAll(contactReport);
-            String sql = "select * from appointments where contact_id = ? order by Start";
-            PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
-            ps.setInt(1, contact.getContactID());
-            System.out.println(ps);
-            ResultSet rs = ps.executeQuery();
+            if (contact != null) {
+                contactReport.removeAll(contactReport);
+                String sql = "select * from appointments where contact_id = ? order by Start";
+                PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
+                ps.setInt(1, contact.getContactID());
+                ResultSet rs = ps.executeQuery();
 
-            while(rs.next()){
-                int appointmentID = rs.getInt("Appointment_ID");
-                String title = rs.getString("Title");
-                String description = rs.getString("Description");
-                String location = rs.getString("Location");
-                int contactID = rs.getInt("Contact_ID");
-                String type = rs.getString("Type");
-                LocalDateTime startTime = rs.getTimestamp("Start").toLocalDateTime();
-                LocalDateTime endTime = rs.getTimestamp("End").toLocalDateTime();
-                int customerID = rs.getInt("Customer_ID");
-                int userID = rs.getInt("User_ID");
+                while (rs.next()) {
+                    int appointmentID = rs.getInt("Appointment_ID");
+                    String title = rs.getString("Title");
+                    String description = rs.getString("Description");
+                    String location = rs.getString("Location");
+                    int contactID = rs.getInt("Contact_ID");
+                    String type = rs.getString("Type");
+                    LocalDateTime startTime = rs.getTimestamp("Start").toLocalDateTime();
+                    LocalDateTime endTime = rs.getTimestamp("End").toLocalDateTime();
+                    int customerID = rs.getInt("Customer_ID");
+                    int userID = rs.getInt("User_ID");
 
-                Appointment appointment = new Appointment(appointmentID, title, description, location, type, startTime, endTime, customerID, userID, contact);
-                contactReport.add(appointment);
+                    Appointment appointment = new Appointment(appointmentID, title, description, location, type, startTime, endTime, customerID, userID, contact);
+                    contactReport.add(appointment);
+                }
+
             }
-            for (Appointment a: contactReport){
-                System.out.println("Appointment: " + a.getAppointmentID() + " -- For: " + a.getDescription() + " -- Assigned with " + a.getContact().getName() + "-" + a.getContact().getContactID());
-            }
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
 
+    /** Loads custom month report
+     * uses SQL to load appointments that match selected month
+     * @param month
+     */
     public static void loadMonthReport(String month){
         try {
             monthReport.removeAll(monthReport);
@@ -178,6 +193,10 @@ public class DBAppointment {
         }
     }
 
+    /** Loads custom country report
+     * uses SQL to load custom table that takes selected country
+     * @param countryID
+     */
     public static void loadCountryReport(int countryID){
         try {
             countryReport.removeAll(countryReport);
@@ -200,9 +219,6 @@ public class DBAppointment {
                 int total = rs.getInt("Total");
 
                 Country report = new Country(total, type);
-
-                System.out.println("Country ID: " + countryID + "   has " + total + " appointments of type: " + type);
-
                 countryReport.add(report);
             }
 
@@ -210,6 +226,10 @@ public class DBAppointment {
             e.printStackTrace();
         }
     }
+
+    /** Loads all contacts from database
+     * there is no contact helper, so this was added here
+     */
     public static void loadAllContacts(){
         try{
             contacts.removeAll(contacts);
@@ -230,6 +250,11 @@ public class DBAppointment {
         }
 
     }
+
+    /** Returns contact object from matching ID
+     * @param contactID
+     * @return
+     */
     public static Contact getContact(int contactID){
         loadAllContacts();
         for(Contact c: contacts){
@@ -239,23 +264,45 @@ public class DBAppointment {
         }
         return null;
     }
+
+    /** Contacts getter
+     * @return
+     */
     public static ObservableList<Contact> getContacts(){
         return contacts;
     }
 
+    /** Appointment getter
+     * @return
+     */
     public static ObservableList<Appointment> getAppointments(){
         return appointments;
     }
+
+    /** Month report getter
+     * @return
+     */
     public static ObservableList<Country> getMonthReport(){
         return monthReport;
     }
+
+    /** Country report getter
+     * @return
+     */
     public static ObservableList<Country> getCountryReport(){
         return countryReport;
     }
+
+    /** Contact report getter
+     * @return
+     */
     public static ObservableList<Appointment> getContactReport(){
         return contactReport;
     }
 
+    /** Month list getter
+     * @return
+     */
     public static ObservableList getMonths() {
         months.add("January");
         months.add("February");
@@ -273,6 +320,10 @@ public class DBAppointment {
         return months;
     }
 
+    /** Deletes appointment from database
+     * @param appointment
+     * @throws SQLException
+     */
     public static void deleteAppointment(Appointment appointment) throws SQLException {
         String sql = "Delete from appointments where Appointment_ID = ?";
         PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
@@ -281,6 +332,10 @@ public class DBAppointment {
         ps.executeUpdate();
     }
 
+    /** Adds new appointment to database
+     * @param appointment
+     * @throws SQLException
+     */
     public static void addAppointment(Appointment appointment) throws SQLException {
         try {
             String sql = "INSERT INTO appointments (Appointment_ID, Title, Description, Location, Type, Start, End, Create_Date, Created_By,Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID)" +
@@ -305,15 +360,19 @@ public class DBAppointment {
         }
     }
 
-    public static Appointment getAppointment(int id){
-        for(Appointment c : appointments){
-            if (c.getAppointmentID() == id){
-                return c;
-            }
-        }
-        return null;
-    }
-
+    /** Modifies appointment in the database.
+     * Rewrites all parameters to catch any changes
+     * @param appointmentID
+     * @param title
+     * @param description
+     * @param location
+     * @param type
+     * @param startTime
+     * @param endTime
+     * @param customerID
+     * @param userID
+     * @param contact
+     */
     public static void modAppointment(int appointmentID, String title, String description, String location, String type, LocalDateTime startTime, LocalDateTime endTime, int customerID, int userID, Contact contact){
         try{
             String sql = "UPDATE appointments SET Title=?, Description=?, Location=?, Type=?, Start=?, End=?, Last_Update=NOW(), Last_Updated_By=?, Customer_ID=?, User_ID=?, Contact_ID=? WHERE Appointment_ID=?";
@@ -331,25 +390,17 @@ public class DBAppointment {
             ps.setInt(10, contact.getContactID());
             ps.setInt(11, appointmentID);
 
-
-            //appointments.add(customer);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        /*getCustomer(customerID).setCustomerName(customerName);
-        getCustomer(customerID).setAddress(address);
-        getCustomer(customerID).setPostalCode(postalCode);
-        getCustomer(customerID).setPhoneNumber(phoneNumber);
-        getCustomer(customerID).setDivision(division);
-        getCustomer(customerID).setCountry(country);
-        getCustomer(customerID).setDivisionID(divisionID);
 
-        } finally {
-
-        }*/
     }
 
+    /** Looks through existing appointment IDs to find next available
+     * Starts at 1, finds next valid int
+     * @return
+     */
     public static int getNextAppointmentID() {
 
         for(int i = 1; i <= getAppointments().size()+1; i++) {
@@ -361,6 +412,11 @@ public class DBAppointment {
         return nextAppointmentID;
     }
 
+    /** Returns appointment that matches given ID
+     * returns null if ID not found
+     * @param appointmentID
+     * @return
+     */
     public static Appointment lookupAppointment(int appointmentID){
         for(Appointment p : appointments){
             if(p.getAppointmentID() == appointmentID){

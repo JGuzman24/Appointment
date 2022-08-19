@@ -10,11 +10,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/** This class handles all functions for Divisions (States/Provinces) from the database
+ *
+ */
 public class DBDivision {
 
     private static ObservableList<Division> divisions = FXCollections.observableArrayList();
 
 
+    /** Loads all low level divisions
+     * @return observable list of divisions
+     */
     public static ObservableList<Division> loadAllDivisions(){
         divisions.removeAll(divisions);
 
@@ -44,6 +50,10 @@ public class DBDivision {
         return divisions;
     }
 
+    /** Division getter
+     * @param divisionID
+     * @return
+     */
     public static Division getDivision(int divisionID){
         for(Division D: divisions){
             if(D.getId()==divisionID){
@@ -53,6 +63,10 @@ public class DBDivision {
         return null;
     }
 
+    /** Country getter
+     * @param divisionID
+     * @return
+     */
     public static Country getCountry(int divisionID){
         for(Country C: countries){
             if(C.getId()== getDivision(divisionID).getCountryID()){
@@ -64,6 +78,10 @@ public class DBDivision {
 
     public static ObservableList<Country> countries = FXCollections.observableArrayList();
 
+    /** Loads all countries from the database
+     * also returns as an observable list
+     * @return country list
+     */
     public static ObservableList<Country> loadAllCountries(){
         countries.removeAll(countries);
 
@@ -87,22 +105,15 @@ public class DBDivision {
         return countries;
     }
 
+    /** Narrows low level divisions to the country in which they reside
+     * @param countryID
+     * @return list of divisions
+     */
     public static ObservableList<Division> narrowDivisions(int countryID){
         ObservableList<Division> fullDivisions = loadAllDivisions();
         ObservableList<Division> narrowedDivisions = FXCollections.observableArrayList();
         for(Division D : fullDivisions){
             if(D.getCountryID() == countryID){
-                narrowedDivisions.add(D);
-            }
-        }
-        return narrowedDivisions;
-    }
-
-    public static ObservableList<Division> getComboDivision(int divisionID){
-        ObservableList<Division> fullDivisions = loadAllDivisions();
-        ObservableList<Division> narrowedDivisions = FXCollections.observableArrayList();
-        for(Division D : fullDivisions){
-            if(D.getId() == divisionID){
                 narrowedDivisions.add(D);
             }
         }

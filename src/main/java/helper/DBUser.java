@@ -12,34 +12,17 @@ import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/** Handles functions between users and the database
+ *
+ */
 public class DBUser {
     private static String currentUser = "";
 
-
-    public static ObservableList<User> getAllUsers(){
-        ObservableList<User> users = FXCollections.observableArrayList();
-
-        try {
-            String sql = "SELECT * from users";
-            PreparedStatement ps = JDBC.getConnection().prepareStatement(sql);
-
-            ResultSet rs = ps.executeQuery();
-
-            while(rs.next()){
-                int userId = rs.getInt("User_ID");
-                String userName = rs.getString("User_Name");
-                String userPassword = rs.getString("Password");
-                User user = new User(userId, userName, userPassword);
-                users.add(user);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return users;
-    }
-
+    /** Verifies user credentials to log in
+     * @param username
+     * @param password
+     * @return
+     */
     public static boolean userCredentials(String username, String password){
 
         Locale currentLocale = Locale.getDefault();
@@ -88,6 +71,10 @@ public class DBUser {
         alert.showAndWait();
         return false;
     }
+
+    /** Current User getter
+     * @return current user
+     */
     public static String getCurrentUser(){
         return currentUser;
     }

@@ -3,6 +3,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
+/** Creates connection with the database
+ * both opens and closes connections
+ */
 public abstract class JDBC {
 
     private static final String protocol = "jdbc";
@@ -16,6 +19,9 @@ public abstract class JDBC {
     private static Connection connection = null;  // Connection Interface
     private static PreparedStatement preparedStatement;
 
+    /** Opens connection to the database
+     *
+     */
     public static void openConnection()
     {
         try {
@@ -29,10 +35,16 @@ public abstract class JDBC {
         }
     }
 
+    /** connection getter
+     * @return connection
+     */
     public static Connection getConnection(){
         return connection;
     }
 
+    /** Closes the connection with the database
+     *
+     */
     public static void closeConnection() {
         try {
             connection.close();

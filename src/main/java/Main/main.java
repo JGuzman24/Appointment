@@ -35,16 +35,6 @@ public class main extends Application {
         JDBC.openConnection();
         System.out.println(Locale.getDefault());
 
-        ObservableList<Division> divisionsList = DBDivision.loadAllDivisions();
-        ObservableList<User> userList = DBUser.getAllUsers();
-
-        for (Division D: divisionsList){
-            System.out.println("Division ID: " + D.getId() + "  Name: " + D.getName() + "  Country: " + D.getCountry());
-        }
-        for (User U : userList){
-            System.out.println("User ID: " + U.getId() + "  Username: " + U.getName() + "  Password: " + U.getPassword());
-        }
-
         launch();
 
         JDBC.closeConnection();

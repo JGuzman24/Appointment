@@ -23,6 +23,9 @@ import java.time.ZoneId;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/** This class handles all functions for the login screen
+ *
+ */
 public class LoginController implements Initializable {
 
     public Label language;
@@ -30,7 +33,7 @@ public class LoginController implements Initializable {
     public TextField loginUser;
     public TextField loginPassword;
 
-    public static final SimpleDateFormat time = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+    private static final SimpleDateFormat time = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
     public Button login;
     public Button reset;
     public Label Title;
@@ -38,6 +41,10 @@ public class LoginController implements Initializable {
     public Label sysinfo;
     public Label timezone;
 
+    /** Initializer for the login screen
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -64,6 +71,12 @@ public class LoginController implements Initializable {
 
 
     }
+
+    /** Verifies the login attempt
+     * if the password matches what we have for the user, login commences
+     * @param actionEvent
+     * @throws IOException
+     */
     public void login(ActionEvent actionEvent) throws IOException {
         FileWriter fileWriter = new FileWriter("login_activity.txt", true);
         PrintWriter loginActivity = new PrintWriter(fileWriter);
@@ -97,6 +110,9 @@ public class LoginController implements Initializable {
 
     }
 
+    /** Clears login frame
+     * @param actionEvent
+     */
     public void reset(ActionEvent actionEvent) {
         loginUser.setText(null);
         loginPassword.setText(null);

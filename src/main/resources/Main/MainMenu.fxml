@@ -74,4 +74,5 @@
          <Font size="15.0" />
       </font>
    </RadioButton>
+   <Button fx:id="close" layoutX="1087.0" layoutY="652.0" mnemonicParsing="false" onAction="#exitProgram" prefHeight="25.0" prefWidth="79.0" text="Close" />
 </AnchorPane>

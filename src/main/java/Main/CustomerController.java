@@ -22,6 +22,9 @@ import java.sql.SQLException;
 import java.util.Dictionary;
 import java.util.ResourceBundle;
 
+/** Handles all functions for the Customer frame
+ * Works both with new customers and modifying old ones
+ */
 public class CustomerController implements Initializable {
     public TextField customerID;
     public TextField name;
@@ -36,14 +39,17 @@ public class CustomerController implements Initializable {
     private static ObservableList<Country> countries;
     private static ObservableList<Division> divisions;
 
+    /** Initializes the Customer frame
+     * Fields are blank other than ID for new customers
+     * Fields are filled completely for a customer to be modified
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         clearCustomerFields();
 
-        System.out.println("Next available ID: " + DBCustomer.getNextCustomerID());
         customerID.setText(Integer.toString(DBCustomer.getNextCustomerID()));
-        System.out.println("customer ID set to: " + customerID.getText());
-
 
         country.setItems(DBDivision.loadAllCountries());
         country.setPromptText("Country");
@@ -62,9 +68,13 @@ public class CustomerController implements Initializable {
         }
     }
 
+    /** Saves a customer
+     * @param actionEvent
+     * @throws IOException
+     */
     public void saveCustomer(ActionEvent actionEvent) throws IOException{
         try {
-            System.out.println("On Save: customer ID set to: " + customerID.getText());
+
             int saveID = Integer.parseInt(customerID.getText());
             String saveName = name.getText();
             String saveAddress = address.getText();
@@ -80,11 +90,9 @@ public class CustomerController implements Initializable {
             } else {
 
                 if (modCustomer == null) {
-                    System.out.println("New customer: customer ID set to: " + customerID.getText());
                     Customer newCustomer = new Customer(saveID, saveName, saveAddress, savePostalCode, savePhoneNumber, saveDivisionID);
                     DBCustomer.addCustomer(newCustomer);
                 } else {
-                    System.out.println("Modifying customer: customer ID set to: " + customerID.getText());
                     DBCustomer.modCustomer(saveID, saveName, saveAddress, savePostalCode, savePhoneNumber, saveDivisionID);
                 }
 
@@ -115,6 +123,10 @@ public class CustomerController implements Initializable {
 
     }
 
+    /** Returns to main menu
+     * @param actionEvent
+     * @throws IOException
+     */
     public void returnToMenu(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(main.class.getResource("MainMenu.fxml"));
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
@@ -125,7 +137,9 @@ public class CustomerController implements Initializable {
     }
 
 
-
+    /** MModify Customer getter
+     * @param customer
+     */
     public static void loadModCustomer(Customer customer){
         modCustomer = customer;
     }
@@ -139,6 +153,10 @@ public class CustomerController implements Initializable {
         }
 
     }
+
+    /** Clears all possible fields for the customer
+     * ID is not changeable
+     */
     public void clearCustomerFields(){
         name.setText(null);
         address.setText(null);
@@ -150,11 +168,12 @@ public class CustomerController implements Initializable {
         division.setItems(DBDivision.loadAllDivisions());
     }
 
+    /** Makes the modifiable null
+     *
+     */
     public static void clearModCustomer(){
         modCustomer = null;
     }
 
-    public void clear(ActionEvent actionEvent) {
-        clearCustomerFields();
-    }
+
 }

@@ -5,9 +5,6 @@ import Model.Contact;
 import Model.Country;
 import helper.DBAppointment;
 import helper.DBCustomer;
-import javafx.beans.Observable;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -19,11 +16,18 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+interface box {
+    void setVisible(ComboBox box);
+}
+
+interface table {
+    void setVisible(TableView table);
+}
 
 public class ReportController implements Initializable {
     public ComboBox<String> selectMonth;
@@ -44,6 +48,21 @@ public class ReportController implements Initializable {
     public TableColumn countryTotal;
     public ComboBox<Country> selectCountry;
 
+    box vis = (x) -> {
+        selectContact.setVisible(false);
+        selectCountry.setVisible(false);
+        selectMonth.setVisible(false);
+        x.setVisible(true);
+    };
+
+    table invis = (x) -> {
+        contactReportTable.setVisible(false);
+        countryReportTable.setVisible(false);
+        monthReportTable.setVisible(false);
+        x.setVisible(true);
+    };
+
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -51,32 +70,23 @@ public class ReportController implements Initializable {
         selectContact.setItems(DBAppointment.getContacts());
         selectCountry.setItems(DBCustomer.getCountries());
 
-
-
-
-
-
-    }
-
-    public void refreshTable(ObservableList<Appointment> appointments , TableView<Appointment> appTable){
-
     }
 
     public void monthReport(ActionEvent actionEvent) {
-        setBoxVis(selectMonth);
-        setTableVis(monthReportTable);
+        vis.setVisible(selectMonth);
+        invis.setVisible(monthReportTable);
 
     }
 
     public void contactReport(ActionEvent actionEvent) {
-        setBoxVis(selectContact);
-        setTableVis(contactReportTable);
+        vis.setVisible(selectContact);
+        invis.setVisible(contactReportTable);
 
     }
 
     public void countryReport(ActionEvent actionEvent) {
-        setBoxVis(selectCountry);
-        setTableVis(countryReportTable);
+        vis.setVisible(selectCountry);
+        invis.setVisible(countryReportTable);
     }
 
     public void loadMonthReport(ActionEvent actionEvent) {
@@ -117,43 +127,5 @@ public class ReportController implements Initializable {
         stage.setTitle("Main Menu");
         stage.setScene(scene);
         stage.show();
-    }
-
-    public interface box {
-        void setVisible(ComboBox box);
-    }
-
-    public void setBoxVis(ComboBox box){
-        box invis = (x) -> {
-            selectContact.setVisible(false);
-            selectCountry.setVisible(false);
-            selectMonth.setVisible(false);
-            x.setVisible(true);
-        };
-        invis.setVisible(box);
-    }
-
-    public interface table {
-        void setVisible(TableView table);
-    }
-
-    public void setTableVis(TableView table){
-        table invis = (x) -> {
-            contactReportTable.setVisible(false);
-            countryReportTable.setVisible(false);
-            monthReportTable.setVisible(false);
-            x.setVisible(true);
-        };
-        invis.setVisible(table);
-    }
-
-    public interface frame {
-        void setValues();
-    }
-
-    public void loadTableValues(TableView table, TableColumn column){
-        String month = (String) selectMonth.getSelectionModel().getSelectedItem();
-        DBAppointment.loadMonthReport(month);
-        monthReportTable.setItems(DBAppointment.getMonthReport());
     }
 }
