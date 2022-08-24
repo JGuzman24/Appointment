@@ -185,6 +185,14 @@ public class MainMenuController implements Initializable {
             alert.setTitle("Delete Appointment");
             Optional<ButtonType> result = alert.showAndWait();
             if(result.isPresent() && result.get() == ButtonType.OK){
+                Alert noSelection = new Alert(Alert.AlertType.INFORMATION);
+                noSelection.setTitle("Cancellation");
+                noSelection.setHeaderText("Appointment is cancelled");
+                noSelection.setContentText(
+                        "The following appointment will be cancelled: \n" +
+                        "Appointment ID: " + modifyAppointment.getAppointmentID() + "\n" +
+                        "Type: " + modifyAppointment.getType());
+                noSelection.showAndWait();
                 DBAppointment.deleteAppointment(modifyAppointment);
                 refreshTables();
             }
@@ -224,7 +232,6 @@ public class MainMenuController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println("Got to main menu");
         allRadioButton.setSelected(true);
         refreshTables();
         checkAppointments();
@@ -237,17 +244,9 @@ public class MainMenuController implements Initializable {
      *
      */
     public void refreshTables(){
-        System.out.println("loading divisions");
         DBDivision.loadAllDivisions();
-        System.out.println("Loading Customers");
         DBCustomer.loadAllCustomers();
-        System.out.println("Loading Appointments");
         DBAppointment.loadAllAppointments();
-
-        for(Division D: DBDivision.loadAllDivisions()){
-            System.out.println(D.getName() + " - " + D.getCountry());
-        }
-
 
         customerTable.setItems(DBCustomer.getCustomers());
         customerID.setCellValueFactory(new PropertyValueFactory<>("customerID"));

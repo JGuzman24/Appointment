@@ -262,15 +262,21 @@ public class AppointmentController implements Initializable {
      */
     public Boolean noConflict(LocalDateTime start, LocalDateTime end, int appointmentID){
         ObservableList<Appointment> appointments = DBAppointment.getAppointments();
-        for (Appointment A: appointments){
-            if(start.isAfter(A.getStart()) && start.isBefore(A.getEnd()) ){
-                conflictID = A.getAppointmentID();
+        for (Appointment checkAppointment: appointments){
+            if (start.equals(checkAppointment.getStart()) || end.equals(checkAppointment.getEnd())){
+                conflictID = checkAppointment.getAppointmentID();
                 if(conflictID != appointmentID){
                     return false;
                 }
             }
-            if(end.isAfter(A.getStart()) && end.isBefore(A.getEnd())){
-                conflictID = A.getAppointmentID();
+            if(start.isAfter(checkAppointment.getStart()) && start.isBefore(checkAppointment.getEnd()) ){
+                conflictID = checkAppointment.getAppointmentID();
+                if(conflictID != appointmentID){
+                    return false;
+                }
+            }
+            if(end.isAfter(checkAppointment.getStart()) && end.isBefore(checkAppointment.getEnd())){
+                conflictID = checkAppointment.getAppointmentID();
                 if(conflictID != appointmentID){
                     return false;
                 }
